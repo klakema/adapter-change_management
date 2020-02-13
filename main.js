@@ -35,9 +35,9 @@ function mainOnObject() {
     }
     console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`)
   });
-  connector.post((data, error) => {
+  connector.post(function(data, error) {
     if (error) {
-      console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
+     console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
     }
     console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`)
   });

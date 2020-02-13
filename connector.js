@@ -195,9 +195,10 @@ class ServiceNowConnector {
    *   Will be HTML text if hibernating instance.
    * @param {error} callback.error - The error property of callback.
    */
-   post(callOptions, callback) {
-    callOptions.method = 'POST';
-    this.sendRequest(callOptions, (results, error) => callback(results, error));
+   post(callback) {
+    let postCallOptions = this.options;
+    postCallOptions.method = 'POST';
+    this.sendRequest(postCallOptions, (results, error) => { callback(results, error)});
   }
 
 }
