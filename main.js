@@ -193,7 +193,18 @@ healthcheck(callback) {
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
 
+             let response = {changeRequest:[{
+                 change_ticket_number:object.result[0].change_ticket_number,
+                 active:object.result[0].active,
+                 priority:object.result[0].priority,
+                 description:object.result[0].description,
+                 work_start:object.result[0].work_start,
+                 work_end:object.result[0].work_end,
+                 change_ticket_key:object.result[0].sys_id
+             }]}
              
+
+
          }
      } );
   }
