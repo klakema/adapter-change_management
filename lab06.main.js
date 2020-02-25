@@ -187,15 +187,6 @@ healthcheck(callback) {
      * Note how the object was instantiated in the constructor().
      * get() takes a callback function.
      */
-     this.connector.get( (results, error) => {
-         log.info('We are in the get() method results: ${JSON.stringify(results)}');
-
-         if (results && results != null && typeof (results === 'object') && ('body' in results)) {
-             var object = JSON.parse(results.body);
-
-             
-         }
-     } );
   }
 
   /**
