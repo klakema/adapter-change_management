@@ -186,12 +186,20 @@ healthcheck(callback) {
      * The function is a wrapper for this.connector's get() method.
      * Note how the object was instantiated in the constructor().
      * get() takes a callback function.
+     * returns an array of changeTickets.
      */
+
+     var changeTickets = [];
+     
      this.connector.get( (results, error) => {
-         log.info('We are in the get() method results: ${JSON.stringify(results)}');
+         log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
 
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
+
+             for (x in object.result) {
+
+             }
 
              let response = {changeRequest:[{
                  change_ticket_number:object.result[0].change_ticket_number,
@@ -202,10 +210,13 @@ healthcheck(callback) {
                  work_end:object.result[0].work_end,
                  change_ticket_key:object.result[0].sys_id
              }]}
-             
-
-
+            
+         } else {
+             error = "No results from get";
          }
+
+         callback(response, error);   
+
      } );
   }
 
