@@ -114,6 +114,7 @@ healthcheck(callback) {
       * healthcheck(), execute it passing the error seen as an argument
       * for the callback's errorMessage parameter.
       */
+      log.error('Returned error: ${JSON.stringify(error)');
       log.error(`Error: ServiceNow is Offline: ${JSON.stringify(this.id)}`);
       this.emitOffline;
       callback(result, error);
@@ -189,29 +190,34 @@ healthcheck(callback) {
      * returns an array of changeTickets.
      */
 
-     var changeTickets = [];
+     var response;
+     var changeTickets = new Array();
      
      this.connector.get( (results, error) => {
-         log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
+        log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
 
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
+         log.info('==============>We are in the if() statement results: ${JSON.stringify(results)}');
 
-             for (x in object.result) {
+             for (var x in object.result) {
+                 // Add element to changeTickets for each element in result
+         log.info('==============>We are in the for loop');
 
+                 changeTickets.push({
+                     "change_ticket_number" : result[x].number,
+                     "active"               : result[x].active,
+                     "priority"             : result[x].priority,
+                     "description"          : result[x].description,
+                     "work_start"           : result[x].work_start,
+                     "work_end"             : result[x].work_end,
+                     "change_ticket_key"    : result[x].sys_id
+                 });
              }
-
-             let response = {changeRequest:[{
-                 change_ticket_number:object.result[0].change_ticket_number,
-                 active:object.result[0].active,
-                 priority:object.result[0].priority,
-                 description:object.result[0].description,
-                 work_start:object.result[0].work_start,
-                 work_end:object.result[0].work_end,
-                 change_ticket_key:object.result[0].sys_id
-             }]}
-            
+             response = changeTickets;            
          } else {
+             log.info('==============>We are in the else error condition');
+             response = "";
              error = "No results from get";
          }
 
