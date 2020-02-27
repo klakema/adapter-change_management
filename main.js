@@ -101,6 +101,9 @@ healthcheck(callback) {
     * or the instance was hibernating. You must write
     * the blocks for each branch.
     */
+   log.info('Returned from getRecord()');
+   log.info(JSON.stringify(result));
+   log.info(JSON.stringify(error));
    if (error) {
      /**
       * Write this block.
@@ -114,10 +117,11 @@ healthcheck(callback) {
       * healthcheck(), execute it passing the error seen as an argument
       * for the callback's errorMessage parameter.
       */
+      log.info('ServiceNow Offline');
       log.error('Returned error: ${JSON.stringify(error)');
       log.error(`Error: ServiceNow is Offline: ${JSON.stringify(this.id)}`);
       this.emitOffline;
-      callback(result, error);
+      if (callback) callback(response, error);
    } else {
      /**
       * Write this block.
@@ -129,8 +133,9 @@ healthcheck(callback) {
       * parameter as an argument for the callback function's
       * responseData parameter.
       */
-      log.debug('ServiceNow Online: ${JSON.stringify(this.id)}');
-      callback(result, error);
+      log.info('HealthCheck: ServiceNow Online');
+      this.emitOnline;
+      if (callback) callback(response, error);
    }
  });
 }
@@ -155,6 +160,7 @@ healthcheck(callback) {
    *   system is available.
    */
   emitOnline() {
+      log.info('We are in emitOnline()');
     this.emitStatus('ONLINE');
     log.info('ServiceNow: Instance is available.');
   }
@@ -169,6 +175,7 @@ healthcheck(callback) {
    * @param {string} status - The event to emit.
    */
   emitStatus(status) {
+    log.info('==============>We are in the emitStatus method results:');
     this.emit(status, { id: this.id });
   }
 
@@ -198,32 +205,40 @@ healthcheck(callback) {
 
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
-         log.info('==============>We are in the if() statement results: ${JSON.stringify(results)}');
+         log.info('==============>We are in the if() statement results: ');
+         log.info(JSON.stringify(object.result));
 
              for (var x in object.result) {
                  // Add element to changeTickets for each element in result
          log.info('==============>We are in the for loop');
 
                  changeTickets.push({
-                     "change_ticket_number" : result[x].number,
-                     "active"               : result[x].active,
-                     "priority"             : result[x].priority,
-                     "description"          : result[x].description,
-                     "work_start"           : result[x].work_start,
-                     "work_end"             : result[x].work_end,
-                     "change_ticket_key"    : result[x].sys_id
+                     "change_ticket_number" : object.result[x].number,
+                     "active"               : object.result[x].active,
+                     "priority"             : object.result[x].priority,
+                     "description"          : object.result[x].description,
+                     "work_start"           : object.result[x].work_start,
+                     "work_end"             : object.result[x].work_end,
+                     "change_ticket_key"    : object.result[x].sys_id
                  });
              }
-             response = changeTickets;            
+             response = changeTickets;
+             error = "";
+             log.info('Returned response:');
+             log.info(JSON.stringify(response));
+             if (callback) {
+                 log.info('We have callback');
+                 callback(response, error);   
+             } else {
+                 log.info('No callback');
+             }
          } else {
              log.info('==============>We are in the else error condition');
              response = "";
              error = "No results from get";
+             if (callback) callback(response, error);
          }
-
-         callback(response, error);   
-
-     } );
+     });
   }
 
   /**
