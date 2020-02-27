@@ -257,6 +257,46 @@ healthcheck(callback) {
      * Note how the object was instantiated in the constructor().
      * post() takes a callback function.
      */
+
+     this.connector.post( (results, error) => {
+        log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
+
+         if (results && results != null && typeof (results === 'object') && ('body' in results)) {
+             var object = JSON.parse(results.body);
+         log.info('==============>We are in the if() statement results: ');
+         log.info(JSON.stringify(object.result));
+
+             for (var x in object.result) {
+                 // Add element to changeTickets for each element in result
+         log.info('==============>We are in the for loop');
+
+                 changeTickets.push({
+                     "change_ticket_number" : object.result[x].number,
+                     "active"               : object.result[x].active,
+                     "priority"             : object.result[x].priority,
+                     "description"          : object.result[x].description,
+                     "work_start"           : object.result[x].work_start,
+                     "work_end"             : object.result[x].work_end,
+                     "change_ticket_key"    : object.result[x].sys_id
+                 });
+             }
+             response = changeTickets;
+             error = "";
+             log.info('Returned response:');
+             log.info(JSON.stringify(response));
+             if (callback) {
+                 log.info('We have callback');
+                 callback(response, error);   
+             } else {
+                 log.info('No callback');
+             }
+         } else {
+             log.info('==============>We are in the else error condition');
+             response = "";
+             error = "No results from get";
+             if (callback) callback(response, error);
+         }
+     });
   }
 }
 
