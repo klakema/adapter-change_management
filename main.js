@@ -133,8 +133,7 @@ healthcheck(callback) {
       * parameter as an argument for the callback function's
       * responseData parameter.
       */
-      log.info('HealthCheck: ServiceNow Online');
-      this.emitOnline;
+      this.emitOnline();
       if (callback) callback(response, error);
    }
  });
@@ -160,7 +159,6 @@ healthcheck(callback) {
    *   system is available.
    */
   emitOnline() {
-      log.info('We are in emitOnline()');
     this.emitStatus('ONLINE');
     log.info('ServiceNow: Instance is available.');
   }
