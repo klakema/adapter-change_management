@@ -120,7 +120,7 @@ healthcheck(callback) {
       log.info('ServiceNow Offline');
       log.error('Returned error: ${JSON.stringify(error)');
       log.error(`Error: ServiceNow is Offline: ${JSON.stringify(this.id)}`);
-      this.emitOffline;
+      this.emitOffline();
       if (callback) callback(response, error);
    } else {
      /**
@@ -173,7 +173,6 @@ healthcheck(callback) {
    * @param {string} status - The event to emit.
    */
   emitStatus(status) {
-    log.info('==============>We are in the emitStatus method results:');
     this.emit(status, { id: this.id });
   }
 
@@ -199,17 +198,15 @@ healthcheck(callback) {
      var changeTickets = new Array();
      
      this.connector.get( (results, error) => {
-        log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
-
+        log.info('Returned from get()');
+        log.info(JSON.stringify(results));
+        log.info(JSON.stringify(error));
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
-         log.info('==============>We are in the if() statement results: ');
-         log.info(JSON.stringify(object.result));
+//         log.info(JSON.stringify(object.result));
 
              for (var x in object.result) {
                  // Add element to changeTickets for each element in result
-         log.info('==============>We are in the for loop');
-
                  changeTickets.push({
                      "change_ticket_number" : object.result[x].number,
                      "active"               : object.result[x].active,
@@ -225,13 +222,11 @@ healthcheck(callback) {
              log.info('Returned response:');
              log.info(JSON.stringify(response));
              if (callback) {
-                 log.info('We have callback');
                  callback(response, error);   
              } else {
                  log.info('No callback');
              }
          } else {
-             log.info('==============>We are in the else error condition');
              response = "";
              error = "No results from get";
              if (callback) callback(response, error);
@@ -255,35 +250,32 @@ healthcheck(callback) {
      * Note how the object was instantiated in the constructor().
      * post() takes a callback function.
      */
+     var response;
 
      this.connector.post( (results, error) => {
-        log.info('==============>We are in the get() method results: ${JSON.stringify(results)}');
-
+        log.info('Returned from post()');
+        log.info(JSON.stringify(results));
+        log.info(JSON.stringify(error));
          if (results && results != null && typeof (results === 'object') && ('body' in results)) {
              var object = JSON.parse(results.body);
-         log.info('==============>We are in the if() statement results: ');
-         log.info(JSON.stringify(object.result));
+//             log.info('===========================Inside IF with object.result:');
+//             log.info('Returned from post() With object');   
+//             log.info(JSON.stringify(object));
 
-             for (var x in object.result) {
-                 // Add element to changeTickets for each element in result
-         log.info('==============>We are in the for loop');
-
-                 changeTickets.push({
-                     "change_ticket_number" : object.result[x].number,
-                     "active"               : object.result[x].active,
-                     "priority"             : object.result[x].priority,
-                     "description"          : object.result[x].description,
-                     "work_start"           : object.result[x].work_start,
-                     "work_end"             : object.result[x].work_end,
-                     "change_ticket_key"    : object.result[x].sys_id
-                 });
-             }
+            let changeTickets = {
+                     "change_ticket_number" : object.result.number,
+                     "active"               : object.result.active,
+                     "priority"             : object.result.priority,
+                     "description"          : object.result.description,
+                     "work_start"           : object.result.work_start,
+                     "work_end"             : object.result.work_end,
+                     "change_ticket_key"    : object.result.sys_id
+                 };
              response = changeTickets;
              error = "";
-             log.info('Returned response:');
+             log.info('POST - Returned response:');
              log.info(JSON.stringify(response));
              if (callback) {
-                 log.info('We have callback');
                  callback(response, error);   
              } else {
                  log.info('No callback');
